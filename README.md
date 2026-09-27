@@ -10,8 +10,8 @@ injetam esse conhecimento sob demanda, e (3) nos **projetos de workflow** entreg
 
 > **Estado atual (2026-08-03):** os bundles entregues são **três**, todos por API em **créditos comfy.org**
 > — dois de edição de imagem e um de troca de pessoa em vídeo. A rota **self-hosted** (`workflows-cloud/`,
-> GPU RunPod) continua **coberta pelas skills** (`knowledge-runpod-*`, `task-launch-runpod-pod`,
-> `task-package-workflow-project`), mas **não há bundle GPU versionado no momento**.
+> GPU RunPod) continua **coberta** pelos registos CoALA `knowledge-runpod-*` + skills `task-launch-runpod-pod`,
+> `task-package-workflow-project`, mas **não há bundle GPU versionado no momento**.
 
 > Para **agentes de código** (Claude Code, Cursor, Codex…) a porta de entrada é o `AGENTS.md` +
 > `.agents/skills/project-router`. Este README é a porta de entrada para **humanos**.
@@ -19,14 +19,17 @@ injetam esse conhecimento sob demanda, e (3) nos **projetos de workflow** entreg
 ## Por que existe
 Produzir vídeo no ComfyUI/RunPod envolve muito conhecimento não-óbvio e volátil (paths de modelo,
 parâmetros de sampler, VRAM/GPU, custom nodes, custo por segundo). Em vez de despejar tudo num
-arquivo gigante (que degrada o agente — ETH Zurich, arXiv:2602.11988), o conhecimento é **fatiado em
-skills carregadas sob demanda** (progressive disclosure) e **evolui com o uso**, sempre com revisão humana.
+arquivo gigante (que degrada o agente — ETH Zurich, arXiv:2602.11988), o conhecimento vive na
+**memória CoALA local** (busca sob demanda) e o procedimento é **fatiado em skills** carregadas sob
+demanda (progressive disclosure); tudo **evolui com o uso**, sempre com revisão humana.
 
 ## Arquitetura (3 camadas)
 1. **`AGENTS.md`** (always-on, mínimo) — comandos e convenções não-óbvias; aponta para o router.
    `CLAUDE.md` é symlink para ele.
-2. **`.agents/skills/`** (fonte única; symlink `.claude/skills/`) — skills de **conhecimento** (memória
-   semântica), de **tarefa** (procedural, com passo `<evolution>` + `LEARNINGS.md`) e **meta** (evolução/GC).
+2. **`.agents/skills/`** (fonte única; symlink `.claude/skills/`) — skills de **tarefa** (procedural).
+   O **conhecimento** (memória semântica) vive na **memória CoALA local**
+   (`.agents/comfyui-agent-skill-coala-memory-agent-skill/`): as skills `knowledge-*` foram migradas
+   para lá e deletadas em 2026-09-27.
 3. **`project-router`** — despacha TODA tarefa para a cadeia de skills certa antes de implementar.
 
 ## Estrutura
@@ -34,12 +37,11 @@ skills carregadas sob demanda** (progressive disclosure) e **evolui com o uso**,
 docs/                     # relatórios de pesquisa (a fonte: SCAIL-2, workflows, RunPod, provisioning)
 .agents/skills/           # o sistema de skills (catálogo em catalog.md)
   project-router/         #   roteador
-  knowledge-*/            #   conhecimento — vídeo (scail2, comfyui-workflows, runpod-infra/-provisioning)
-                          #              + imagem (image-editing, image-masking, comfyui-api, image-enhance)
-                          #              + API online (comfyui-api-nodes: partner/fal/Replicate)
   task-*/                 #   tarefas (create-commercial, create-commercial-api, build-workflow, launch-pod,
                           #            debug, package-workflow-project, edit-image)
-  meta-*/                 #   evolução e consolidação
+.agents/comfyui-agent-skill-coala-memory-agent-skill/  # memória CoALA local — TODO o conhecimento
+                          #   (chaves knowledge/*: scail2, comfyui-workflows, runpod-infra/-provisioning,
+                          #    image-editing, image-masking, comfyui-api, image-enhance, comfyui-api-nodes)
 workflows-api/            # bundles que rodam por API online, sem GPU — todos em créditos comfy.org
                           #   (image-edit-nano-banana-2, image-edit-seedream, video-person-swap-seedance-2)
 AGENTS.md  ·  CLAUDE.md   # always-on (symlink)
@@ -62,7 +64,7 @@ e segue a mesma ordem de seções.
 **Rodar um bundle por API** (sem GPU): no ComfyUI local, rode o `setup.sh` do bundle (`workflows-api/<nome>/`).
 Os bundles atuais são **100% nós partner (core)** — o `setup.sh` não instala nada e não grava segredo: ele confere
 o servidor, verifica os nós no `/object_info` e deixa o `.json` no painel. A autenticação é o **login em
-`platform.comfy.org`**; a cobrança é em **créditos comfy.org**. Conhecimento: `knowledge-comfyui-api-nodes`.
+`platform.comfy.org`**; a cobrança é em **créditos comfy.org**. Conhecimento: registo CoALA `knowledge-comfyui-api-nodes`.
 
 ## Projetos de workflow
 > Legenda de status: 🟢 validado em execução · 🟡 grafo validado estruturalmente, ainda não executado.
@@ -83,13 +85,13 @@ Os três são **core do ComfyUI**: zero custom node, zero chave de API — só o
 > créditos comfy.org. Estão recuperáveis no git — veja o commit `e1dd237` e o anterior a ele.
 
 ## Memória evolutiva (e suas salvaguardas)
-Skills de tarefa rodam um passo `<evolution>` ao concluir e registram aprendizados em `LEARNINGS.md`.
-`meta-evolution` decide criar/atualizar/descartar skills; `meta-consolidation` faz GC periódico (dedup,
-contradições, orçamento de tokens). **Toda mudança é um diff git para revisão humana** — conteúdo gerado
-por LLM é rascunho até a curadoria. Só se persiste aprendizado de tarefa que passou nos critérios (estilo Voyager).
+Skills de tarefa registam aprendizados na **memória CoALA local** (`coala.py add`) ao concluir;
+o conhecimento de domínio vive **apenas** nela (chaves `knowledge/*`). Atualização por supersessão
+(`--key`), propostas de skill nova como **diff git para revisão humana** — conteúdo gerado por
+LLM é rascunho até a curadoria. Só se persiste aprendizado de tarefa que passou nos critérios (estilo Voyager).
 
 ## Convenções e segurança
-- **API online vs self-hosted:** `workflows-api/` (modelo roda no provedor) · `workflows-cloud/` (você roda em GPU RunPod; sem bundle versionado hoje). Ver `knowledge-comfyui-api-nodes`.
+- **API online vs self-hosted:** `workflows-api/` (modelo roda no provedor) · `workflows-cloud/` (você roda em GPU RunPod; sem bundle versionado hoje). Ver registo CoALA `knowledge-comfyui-api-nodes`.
 - **Credencial por rota:** nós **partner** (os três bundles atuais) = **login** em `platform.comfy.org`, **sem chave**. Nós `*_fal`/Replicate = chave em `~/ComfyUI/secrets.env` (`chmod 600`), **nunca** `~/.secrets`.
 - Modelos vão em `ComfyUI/models/<subpasta>` no Network Volume (`/workspace`). ComfyUI na porta 8188.
 - SCAIL-2/Wan destilado (LightX2V): **cfg=1**, 6–8 steps, shift 1; dims **÷32** (SCAIL-2). Itere em 480p, finalize em 720p.
@@ -98,4 +100,5 @@ por LLM é rascunho até a curadoria. Só se persiste aprendizado de tarefa que 
 
 ## Mapa de skills
 Catálogo completo: [`.agents/skills/catalog.md`](.agents/skills/catalog.md). Convenções de autoria e o
-mecanismo de evolução: skills `meta-evolution` e `meta-consolidation`.
+mecanismo de evolução: memória CoALA local (supersessão por `--key`, `doctor`/`backup`; propostas de
+skill nova como diff para revisão humana).

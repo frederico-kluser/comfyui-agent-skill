@@ -156,7 +156,7 @@ a identidade? Aí sim `Seedance 2.0` + `1080p` + a duração cheia.
 Mais casos: `.agents/skills/task-debug-generation`.
 
 ## Referências
-- Nós de API online: `.agents/skills/knowledge-comfyui-api-nodes`
+- Nós de API online: registo CoALA `knowledge-comfyui-api-nodes` (memória CoALA local)
 - Doc oficial da verificação de humano real:
   <https://docs.comfy.org/tutorials/partner-nodes/bytedance/seedance-2-0-real-human>
 - Templates oficiais de origem: `api_seedance2_0_r2v_real_human.json` e

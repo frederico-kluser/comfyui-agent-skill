@@ -35,8 +35,8 @@ workflows-{cloud,api}/<nome-do-projeto>/   # kebab-case; o nome descreve a taref
 ```
 
 ## Procedimento
-1. **Roteie o conhecimento** (via `project-router`): identifique a técnica e carregue a knowledge skill
-   certa (`knowledge-scail2`, `knowledge-comfyui-workflows`, etc.). Não reinvente o que já está nelas.
+1. **Roteie o conhecimento** (via `project-router`): identifique a técnica e recupere o registo CoALA
+   certo (`knowledge-scail2`, `knowledge-comfyui-workflows`, etc.). Não reinvente o que já está neles.
 2. **Adapte um exemplo known-good** — NÃO escreva o JSON do zero (os docs avisam: JSON à mão é frágil).
    **Procure primeiro nos templates oficiais JÁ INSTALADOS** (não precisa baixar nada):
    `…/site-packages/comfyui_workflow_templates_{core,media_api,media_image,media_video,media_other}/templates/*.json`.
@@ -47,16 +47,16 @@ workflows-{cloud,api}/<nome-do-projeto>/   # kebab-case; o nome descreve a taref
    `control_after_generate` **logo depois do `seed`**, fora da ordem declarada no `/object_info`, e errar isso embaralha
    os widgets **em silêncio**. Valide com `python3 -c "import json;json.load(...)"`.
 3. **Escreva o `setup.sh`** como fork focado de
-   `.agents/skills/knowledge-runpod-provisioning/scripts/provisioning.sh`: só os custom nodes e modelos
+   `task-launch-runpod-pod/scripts/provisioning.sh` (antes em `knowledge-runpod-provisioning`): só os custom nodes e modelos
    QUE ESTE workflow usa; garanta pré-condições (ex.: ComfyUI nightly p/ SCAIL-2); baixe o próprio `.json`
    do repo público para `ComfyUI/user/default/workflows/`. Rode `bash -n setup.sh`.
 4. **Escreva o `README.md`** (estrutura padrão). Comece com o **Card Informativo** — tabela limpa no topo:
    `🎯 Faz · 🧠 Técnica · 🎮 GPU/VRAM · 📥 Entrada · 📤 Saída · 🧩 Modelos · 🟢/🟡 Status` (+ `🧱 Requer` só se
    houver pré-condição dura, ex.: ComfyUI nightly). Depois, **na mesma ordem em todos os projetos**: pré-req
-   (GPU/VRAM → `knowledge-runpod-infra`); setup; **como anexar os inputs** (qual nó recebe o vídeo, qual recebe a
+   (GPU/VRAM → CoALA `knowledge-runpod-infra`); setup; **como anexar os inputs** (qual nó recebe o vídeo, qual recebe a
    foto; passos manuais como gerar máscara ou clicar no `PointsEditor`); parâmetros não-óbvios (tabela); **passos
-   de validação no pod**; troubleshooting (tabela) → `task-debug-generation`; referências. Referencie as knowledge
-   skills; não duplique o conteúdo delas.
+   de validação no pod**; troubleshooting (tabela) → `task-debug-generation`; referências. Referencie os registos
+   CoALA; não duplique o conteúdo deles.
 5. **Registre no catálogo**: adicione o projeto à lista certa (`workflows-cloud/` ou `workflows-api/`) no `README.md` raiz (e, se virar
    um tipo recorrente, uma cadeia no `catalog.md`).
 6. **Valide** (estrutural agora; funcional no pod/primeiro load). Checagem barata que pega quase tudo:
@@ -68,7 +68,7 @@ workflows-{cloud,api}/<nome-do-projeto>/   # kebab-case; o nome descreve a taref
 - **Honestidade:** marque o `.json` como rascunho a validar no pod quando a técnica for nova/instável
   (ex.: SCAIL-2). Não prometa "runnable" sem teste — explique a validação no README.
 - **Sem tokens** no `setup.sh` (lê `HF_TOKEN`/`CIVITAI_TOKEN`/`FAL_KEY` do ambiente). Nunca versione segredos.
-- **Bundle-API:** o Card troca `🎮 GPU/VRAM` por `💳 Custo/billing` + `🔌 Provedores/Nós`. Conhecimento: `knowledge-comfyui-api-nodes`.
+- **Bundle-API:** o Card troca `🎮 GPU/VRAM` por `💳 Custo/billing` + `🔌 Provedores/Nós`. Conhecimento: CoALA `knowledge-comfyui-api-nodes`.
   - rota **fal**: o `setup.sh` instala `ComfyUI-fal-API` e **grava a `FAL_KEY` do ambiente** (chaves em `~/ComfyUI/secrets.env`).
   - rota **partner** (créditos comfy.org): **não instala nada e não grava segredo** — a auth é o **login** em `platform.comfy.org`.
     O `setup.sh` vira um **verificador**: servidor no ar → cada nó presente no `/object_info` com **`python_module` não-nulo**
@@ -78,20 +78,21 @@ workflows-{cloud,api}/<nome-do-projeto>/   # kebab-case; o nome descreve a taref
   Use **`find -L`** e, no fallback, **crie o symlink** em vez de copiar (cópia solta dessincroniza em silêncio).
 - **Status honesto no Card:** 🟡 = "grafo validado estruturalmente, **não executado**". Rodar um bundle-API gasta crédito
   de verdade — não prometa 🟢 antes de o usuário rodar.
-- **Reuso:** modelos/paths vêm de `knowledge-runpod-provisioning`; não recopie manifestos divergentes.
+- **Reuso:** modelos/paths vêm de CoALA `knowledge-runpod-provisioning`; não recopie manifestos divergentes.
 - O `setup.sh` roda como **root** no pod (instala apt/git, baixa modelos) — isso é esperado e seguro no pod descartável.
 
 ## Referências
-- `knowledge-runpod-provisioning` (script base, manifesto), `knowledge-comfyui-workflows` (grafo/JSON),
+- CoALA `knowledge-runpod-provisioning` (manifesto; script base em `task-launch-runpod-pod/scripts/provisioning.sh`),
+  CoALA `knowledge-comfyui-workflows` (grafo/JSON),
   `task-build-workflow` (montar o grafo), `task-launch-runpod-pod` (subir o pod).
 - Exemplo de referência **atual** (bundle-API partner, com `API_REFERENCE_*.md`): `workflows-api/image-edit-nano-banana-2/`
   e `workflows-api/video-person-swap-seedance-2/`. Exemplos antigos (fal, e self-hosted `workflows-cloud/person-swap-scail2/`)
   foram removidos em 2026-08-03 — recuperáveis no git (commit `e1dd237` e anterior).
 
-## <evolution> (ao concluir)
+## registo de aprendizado (memória CoALA local) (ao concluir)
 1. O bundle ficou consistente (JSON válido, `bash -n` ok, README cobre anexar inputs + validação)? Só então persista.
 2. Persista: um exemplo-base bom para uma técnica, um ajuste de `setup.sh` que funcionou, um passo manual
    não-óbvio do README, um anti-padrão. Ignore o óbvio/volátil.
-3. Append em `LEARNINGS.md` (data + fonte: usuário > inferência). Destile no corpo se recorrente (`version++`).
-4. Se a técnica for nova e recorrente, proponha uma knowledge skill via `meta-evolution`.
+3. Registe na memória CoALA local (`coala.py add --type episodic --key "learnings/task-package-workflow-project"`, data + fonte: usuário > inferência). Destile no corpo se recorrente (`version++`).
+4. Se a técnica for nova e recorrente, registe o conhecimento na memória CoALA local (`coala.py add`); se faltar procedimento, proponha skill nova como diff (só procedimento — conhecimento fica no CoALA).
 5. Diff git p/ revisão humana — não faça merge sozinho.

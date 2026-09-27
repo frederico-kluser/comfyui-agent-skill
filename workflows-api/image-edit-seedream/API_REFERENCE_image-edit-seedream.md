@@ -82,5 +82,5 @@ Uma chamada por bloco **não-bypassado** por `Run`. `sequential_image_generation
 aqui de propósito, porque mudam.
 
 ## Ver também
-- `.agents/skills/knowledge-comfyui-api-nodes`
+- registo CoALA `knowledge-comfyui-api-nodes`
 - `../image-edit-nano-banana-2/API_REFERENCE_image-edit-nano-banana-2.md`

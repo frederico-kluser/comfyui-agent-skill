@@ -8,7 +8,7 @@
 - **Categoria:** `partner/video/ByteDance` · **Módulo:** `comfy_api_nodes.nodes_bytedance`
 - **Billing:** créditos **comfy.org** (auth por login)
 - **Saída:** `VIDEO` **nativo** → vai direto no `SaveVideo`, **áudio preservado**
-  (é o padrão B da skill `knowledge-comfyui-api-nodes`; nós `*_fal` devolvem URL e perdem o áudio)
+  (é o padrão B do registo CoALA `knowledge-comfyui-api-nodes`; nós `*_fal` devolvem URL e perdem o áudio)
 
 ### Estrutura do input: `COMFY_DYNAMICCOMBO_V3`
 O widget `model` é um **combo dinâmico**: os parâmetros mudam conforme a opção escolhida.
@@ -133,5 +133,5 @@ O `asset_id` é validado antes de cada geração (`GET /proxy/seedance/assets/{i
 Preços atuais: tabela em `platform.comfy.org` (mudam; não fixados aqui de propósito).
 
 ## Ver também
-- `.agents/skills/knowledge-comfyui-api-nodes` — as 3 rotas de billing, os 2 padrões de saída de vídeo, seed gates.
+- registo CoALA `knowledge-comfyui-api-nodes` — as 3 rotas de billing, os 2 padrões de saída de vídeo, seed gates.
 - Doc oficial: <https://docs.comfy.org/tutorials/partner-nodes/bytedance/seedance-2-0-real-human>

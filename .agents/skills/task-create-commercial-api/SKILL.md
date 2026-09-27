@@ -5,8 +5,8 @@ description: >-
   sintético ancorado em Nano Banana Pro → keyframe→vídeo com Veo 3.1 → extensão dirigida (Veo handoff / Kling
   nativo / Seedance barato) → ColorMatch → concat ffmpeg. Identity lock por âncora+frase, gramática Veo 3.1,
   rascunho barato Seedance, 16:9/9:16. Use sempre que o pedido for criar/produzir um comercial, anúncio ou clipe
-  SEM alugar GPU (na nuvem/por API) — mesmo sem citar a skill. Orquestra knowledge-comfyui-api-nodes e o bundle
-  workflows-api/commercial-ondokai. Para a variante self-hosted (SCAIL-2/Wan em GPU) use task-create-commercial.
+  SEM alugar GPU (na nuvem/por API) — mesmo sem citar a skill. Orquestra o registo CoALA
+  knowledge-comfyui-api-nodes e o bundle workflows-api/commercial-ondokai. Para a variante self-hosted (SCAIL-2/Wan em GPU) use task-create-commercial.
 metadata:
   version: 0.1.0
   type: task
@@ -14,7 +14,7 @@ metadata:
 # Tarefa — Criar um Comercial de Vídeo por API (cloud, sem GPU)
 
 Leva um briefing a um comercial entregável usando **modelos hospedados** (Veo 3.1, Nano Banana Pro, Kling, Seedance)
-dentro do ComfyUI. A máquina só orquestra — cabe em **8 GB**. Conhecimento dos nós/seed gates/chaves: `knowledge-comfyui-api-nodes`.
+dentro do ComfyUI. A máquina só orquestra — cabe em **8 GB**. Conhecimento dos nós/seed gates/chaves: CoALA `knowledge-comfyui-api-nodes`.
 Bundle pronto: **`workflows-api/commercial-ondokai/`** (19 workflows). Variante self-hosted (SCAIL-2/Wan em GPU) → `task-create-commercial`.
 
 ## Quando usar
@@ -48,12 +48,12 @@ e os nós `*_fal` **bloqueiam sem barra** (cold-start pode ficar minutos em `IN_
 ## Gotchas de produção
 - Consistência = âncora no `images` + frase `<<PROTAGONISTA>>` idêntica + figurino nomeado. Cor = ColorMatch vs UM hero frame.
 - `NanoBananaEdit_fal` (Gemini 2.5) é **fraco** ("devolve a foto") → use `NanoBananaPro_fal` (Gemini 3).
-- Seed gates: ver `knowledge-comfyui-api-nodes` (Veo/Nano Banana **sem seed**; Seedance **tem**).
+- Seed gates: ver CoALA `knowledge-comfyui-api-nodes` (Veo/Nano Banana **sem seed**; Seedance **tem**).
 - SCAIL-2 **não tem nó** Comfy/fal; substituto por API = **Wan 2.2 Animate** (`Wan2214b_animate_{move,replace}_character_fal`).
 
-## <evolution> (passo obrigatório ao concluir)
+## registo de aprendizado (memória CoALA local) (passo obrigatório ao concluir)
 1. O comercial saiu coerente (identidade estável, sem morph, cor casada)? Só persista se **SIM**.
 2. Persista o que vale: um prompt Veo eficaz, uma combinação de câmera por beat, um método de extend que funcionou, um anti-padrão (o que morfou/derivou), um cold-start medido, um seed gate novo. Ignore o óbvio/volátil (preço de hoje).
-3. Append em `LEARNINGS.md` (data + fonte: usuário > inferência). Se acumular padrão estável, destile no corpo e `version++`.
-4. Nó/modelo novo ou área nova → `meta-evolution` (atualizar `knowledge-comfyui-api-nodes` ou propor skill).
+3. Registe na memória CoALA local (`coala.py add --type episodic --key "learnings/task-create-commercial-api" --content "… (data + fonte: usuário > inferência)"`). Se acumular padrão estável, destile no corpo e `version++`.
+4. Nó/modelo novo ou área nova → a memória CoALA local (`coala.py add`) (suplantar a chave `knowledge/knowledge-comfyui-api-nodes` ou propor skill).
 5. **Não** faça merge sozinho: deixe como diff git p/ revisão humana.

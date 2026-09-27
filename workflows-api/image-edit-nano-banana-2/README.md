@@ -134,6 +134,6 @@ Mais casos: `.agents/skills/task-debug-generation`.
 
 ## Referências
 
-- Nós de API online: `.agents/skills/knowledge-comfyui-api-nodes`
-- Técnica de edição: `.agents/skills/knowledge-image-editing` · realce: `knowledge-image-enhance`
+- Nós de API online: registo CoALA `knowledge-comfyui-api-nodes` (memória CoALA local)
+- Técnica de edição: registo CoALA `knowledge-image-editing` · realce: `knowledge-image-enhance`
 - Template oficial de origem: `comfyui_workflow_templates_media_image/templates/api_google_nano_banana2_image_edit.json`

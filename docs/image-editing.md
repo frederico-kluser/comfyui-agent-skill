@@ -1,7 +1,9 @@
 # O Tutorial Definitivo de Edição de Imagens no ComfyUI (Junho/2026)
 
-> Relatório de pesquisa (fonte). As skills `knowledge-image-editing`, `knowledge-image-masking`,
-> `knowledge-comfyui-api` e `knowledge-image-enhance` destilam este doc. Edite conhecimento via skills.
+> Relatório de pesquisa (fonte). O conhecimento destilado vive na memória CoALA local (chaves
+> `knowledge/knowledge-image-editing`, `knowledge/knowledge-image-masking`,
+> `knowledge/knowledge-comfyui-api`, `knowledge/knowledge-image-enhance` — skills deletadas em 2026-09-27).
+> Edite conhecimento via `coala.py add` (supersessão por `--key`), não duplique.
 
 ## TL;DR
 - **Para selecionar APENAS uma parte da imagem**, três caminhos: máscara manual (MaskEditor nativo — clique direito > "Open in MaskEditor"), seleção semântica por texto (Florence-2 / Grounding DINO + SAM2/SAM3) e detecção automática (Impact Pack: UltralyticsDetector + SAMDetector). Para EDITAR só essa parte, use inpainting com `InpaintModelConditioning` + KSampler com denoise parcial, idealmente com um modelo dedicado (Flux Fill) ou edição por instrução (Flux Kontext / Qwen-Image-Edit).

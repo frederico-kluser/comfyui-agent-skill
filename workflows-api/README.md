@@ -128,6 +128,6 @@ export FAL_KEY=sua-chave-aqui
 
 ## Ver também
 
-- `.agents/skills/knowledge-comfyui-api-nodes` — rotas de billing (partner / fal / Replicate), catálogo, seed gates, chaves.
+- registo CoALA `knowledge-comfyui-api-nodes` — rotas de billing (partner / fal / Replicate), catálogo, seed gates, chaves.
 - `.agents/skills/task-package-workflow-project` — como um bundle destes é montado.
 - `.agents/skills/task-debug-generation` — quando algo falha.

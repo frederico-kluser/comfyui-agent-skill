@@ -67,5 +67,5 @@ Cada bloco **não-bypassado** dispara **uma** chamada ao Nano Banana 2 por `Run`
 `platform.comfy.org` — os valores mudam e **não** estão fixados aqui de propósito.
 
 ## Ver também
-- `.agents/skills/knowledge-comfyui-api-nodes` — as 3 rotas (partner / fal / Replicate), seed gates, chaves.
+- registo CoALA `knowledge-comfyui-api-nodes` — as 3 rotas (partner / fal / Replicate), seed gates, chaves.
 - `../image-edit-seedream/API_REFERENCE_image-edit-seedream.md` — o mesmo, para o Seedream.

@@ -4,7 +4,7 @@ description: >-
   Diagnóstico de falhas de geração no ComfyUI: OOM/CUDA out of memory, vídeo preto/cinza, ruído/snow entre runs,
   nós vermelhos (missing), dropdown de modelo vazio, incompatibilidade de tipos e servidor "Reconnecting". Use
   quando algo "deu erro", "não gera", "ficou preto", "estourou a memória", "travou" ou aparece nó vermelho —
-  mesmo sem citar a skill. Apoia-se em knowledge-comfyui-workflows.
+  mesmo sem citar a skill. Apoia-se no registo CoALA knowledge-comfyui-workflows (memória CoALA local).
 metadata:
   version: 0.1.0
   type: task
@@ -41,11 +41,11 @@ Preview Image / preview de vídeo em pontos intermediários; Preview Method = La
 Preview Any (valores de tensor); Link Fixer (rgthree).
 
 ## Referências
-- `knowledge-comfyui-workflows` (low-VRAM, cadeia de nós), `knowledge-scail2` (cfg/máscara/nightly),
+- CoALA `knowledge-comfyui-workflows` (low-VRAM, cadeia de nós), `knowledge-scail2` (cfg/máscara/nightly),
   `docs/workflow-guide.md` §8, `docs/runpod-guide.md` §9.
 
-## <evolution>
+## registo de aprendizado (memória CoALA local)
 1. Resolveu? Só então persista.
 2. Persista: um par sintoma→causa→fix **novo** ou não-óbvio, ou a combinação que destravou. Ignore o já listado.
-3. Append em `LEARNINGS.md` (data + fonte). Destile no corpo se recorrente (`version++`). Nova classe de erro → `meta-evolution`.
+3. Registe na memória CoALA local (`coala.py add --type episodic`, com data/fonte). Destile no corpo se recorrente (`version++`). Nova classe de erro → a memória CoALA local (`coala.py add`).
 4. Diff git para revisão.

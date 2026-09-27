@@ -1,0 +1,50 @@
+{
+  "_doc": "Memória interna do repo comfyui-agent-skill para `coala.py ingest`. A memória histórica (LEARNINGS.md de cada skill) entra como episódica; contratos/catálogos como semântica. Exclui .claude/skills/** (espelho de registo — o canónico é .agents/skills/**), logs e material de terceiros.",
+  "version": 1,
+  "key_prefix": "comfyui",
+  "path_prefix": "",
+  "exclude": [],
+  "rules": [
+    {
+      "name": "learnings",
+      "include": [".agents/skills/*/LEARNINGS.md"],
+      "mode": "markdown",
+      "type": "episodic",
+      "origin": "agent",
+      "tags": "learnings,evolucao,historico,{dir}"
+    },
+    {
+      "name": "skills",
+      "include": [".agents/skills/*/SKILL.md"],
+      "mode": "markdown",
+      "type": "semantic",
+      "origin": "agent",
+      "tags": "skill,{dir}"
+    },
+    {
+      "name": "catalogos",
+      "include": [".agents/skills/catalog.md", ".claude/skills/catalog.md"],
+      "mode": "markdown",
+      "type": "semantic",
+      "origin": "agent",
+      "tags": "catalogo,router"
+    },
+    {
+      "name": "contratos",
+      "include": ["AGENTS.md", "CLAUDE.md", "README.md"],
+      "mode": "markdown",
+      "type": "semantic",
+      "origin": "agent",
+      "tags": "docs,contrato,{stem}"
+    },
+    {
+      "name": "docs",
+      "include": ["docs/**/*.md"],
+      "mode": "markdown",
+      "type": "semantic",
+      "origin": "agent",
+      "tags": "docs,{stem}"
+    }
+  ],
+  "graph": { "entities": [], "edges": [] }
+}

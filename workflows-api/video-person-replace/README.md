@@ -138,5 +138,5 @@ Mais casos: `.agents/skills/task-debug-generation`.
 
 ## Referências
 
-- Nós de API online: `.agents/skills/knowledge-comfyui-api-nodes`
+- Nós de API online: registo CoALA `knowledge-comfyui-api-nodes` (memória CoALA local)
 - Endpoint fal: `fal-ai/wan/v2.2-14b/animate/replace` — `resolution ∈ {480p, 580p, 720p}`, default `480p`
