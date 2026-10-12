@@ -1,12 +1,13 @@
 # workflows-api — bundles que rodam por API online (sem GPU)
 
-Cinco bundles. **Nenhum precisa de GPU.** A maioria paga com **créditos do comfy.org**
+Seis bundles. **Nenhum precisa de GPU.** A maioria paga com **créditos do comfy.org**
 (só login, sem chave); um usa **fal.ai** (precisa de `FAL_KEY`); e um roda **de graça, local**.
 
 | Bundle | O que faz | Nó principal | Billing |
 |---|---|---|---|
 | [`image-edit-nano-banana-2`](image-edit-nano-banana-2/) | 6 edições de foto, um arquivo por processo | `GeminiNanoBanana2` | crédito comfy.org |
 | [`image-edit-seedream`](image-edit-seedream/) | As **mesmas** 6 edições, no outro melhor editor | `ByteDanceSeedreamNode` | crédito comfy.org |
+| [`image-edit-area-multiref`](image-edit-area-multiref/) | Editar **só a área pintada**, com até **10 referências** (+ cliente REST/WebSocket) | `GeminiNanoBanana2V2` | crédito comfy.org |
 | [`video-person-replace`](video-person-replace/) | **Trocar a pessoa de um vídeo que eu forneço** | `Wan2214b_animate_replace_character_fal` | **fal.ai (`FAL_KEY`)** |
 | [`video-person-swap-seedance-2`](video-person-swap-seedance-2/) | Gerar um vídeo novo comigo, a partir de referências | `ByteDance2ReferenceNode` | crédito comfy.org |
 | [`foto-realismo-celular`](foto-realismo-celular/) | Deixar **qualquer** foto com cara de foto de celular | WAS Suite + KJNodes | **grátis (CPU local)** |
@@ -78,7 +79,8 @@ cd video-person-replace     && bash setup.sh     # vídeo, precisa de FAL_KEY
 cd foto-realismo-celular    && bash setup.sh     # grátis, local
 ```
 
-O `setup.sh` **não instala nada**: confere o servidor, verifica no `/object_info` que os nós existem
+O `setup.sh` **não instala nada** (exceto o do `image-edit-area-multiref`, que clona **um** custom node sem IA — o
+Inpaint Crop & Stitch): confere o servidor, verifica no `/object_info` que os nós existem
 (e, no bundle de vídeo, se o `FAL_KEY` está presente) e garante que os `.json` aparecem no painel
 *Workflows* — criando o symlink `~/ComfyUI/user/default/workflows/api` → este diretório.
 
@@ -122,7 +124,7 @@ export FAL_KEY=sua-chave-aqui
 
 | Parte | Status |
 |---|---|
-| Estrutura dos grafos | 🟢 **validada contra o `/object_info` ao vivo** — 16/16 arquivos |
+| Estrutura dos grafos | 🟢 **validada contra o `/object_info` ao vivo** — os 16 arquivos dos bundles anteriores; o `image-edit-area-multiref` tem validação própria (`graph_spec.py --check`) |
 | Cadeia de realismo | 🟢 **executada e medida** nesta máquina |
 | Chamadas aos modelos pagos | 🟡 **não executadas** — gastariam crédito. Valide no primeiro load |
 

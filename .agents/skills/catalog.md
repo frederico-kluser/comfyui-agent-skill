@@ -64,6 +64,8 @@ Notação: `task-*` = skill viva; `CoALA knowledge-*` = registo na memória CoAL
 | "criar comercial SEM GPU / por API / Veo-Kling-Seedance" | `task-create-commercial-api` → CoALA `knowledge-comfyui-api-nodes` (bundle removido em 2026-08-03; ver git) |
 | "rodar workflow por API / qual provedor / custo em créditos / fal vs Comfy / nó fal travou" | CoALA `knowledge-comfyui-api-nodes` |
 | "editar foto por API: trocar roupa · objeto · pessoa · local (+ match de luz)" | `task-edit-image` → CoALA `knowledge-comfyui-api-nodes` + `knowledge-image-editing` (bundles `workflows-api/image-edit-nano-banana-2/` · `image-edit-seedream/`) |
+| "abrir/encerrar/instalar o ComfyUI local", "comando comfyui" | comando global `comfyui` (primeiro plano, Ctrl+C) · `workflows-api/image-edit-area-multiref/scripts/install_comfyui_local.sh` · CoALA `event/comfyui-local-install-2026-10` (GPU sim, IA só por API, sem systemd) |
+| "editar SÓ uma área (máscara/inpaint) por API, com até 10 referências" / "inpaint + várias referências sem GPU" | `task-edit-image` → CoALA `knowledge-comfyui-api-nodes` + `knowledge-image-editing` (bundle `workflows-api/image-edit-area-multiref/` — recorte→Nano Banana 2→stitch+trava; cliente headless `scripts/comfy_client.py`) |
 | "me colocar numa FOTO no lugar de uma pessoa (mesma roupa/pose, **ou** com a minha)" | CoALA `knowledge-comfyui-api-nodes` (blocos 4 e 5 dos bundles `image-edit-*`) |
 | "me colocar num VÍDEO no lugar de uma pessoa (Seedance 2.0)" | CoALA `knowledge-comfyui-api-nodes` (bundle `workflows-api/video-person-swap-seedance-2/`) — ⚠️ humano real exige **asset verificado** |
 | "upscale / outpaint / relight / tirar fundo" | CoALA `knowledge-image-enhance` |

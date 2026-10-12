@@ -9,7 +9,7 @@ description: >-
   a skill. Adapta um exemplo known-good (não escreve JSON do zero). Difere de task-build-workflow
   (que monta o grafo no ComfyUI); esta EMPACOTA o bundle no repo.
 metadata:
-  version: 0.2.0
+  version: 0.3.0
   type: task
 ---
 # Tarefa — Empacotar um Projeto de Workflow
@@ -38,14 +38,21 @@ workflows-{cloud,api}/<nome-do-projeto>/   # kebab-case; o nome descreve a taref
 1. **Roteie o conhecimento** (via `project-router`): identifique a técnica e recupere o registo CoALA
    certo (`knowledge-scail2`, `knowledge-comfyui-workflows`, etc.). Não reinvente o que já está neles.
 2. **Adapte um exemplo known-good** — NÃO escreva o JSON do zero (os docs avisam: JSON à mão é frágil).
-   **Procure primeiro nos templates oficiais JÁ INSTALADOS** (não precisa baixar nada):
-   `…/site-packages/comfyui_workflow_templates_{core,media_api,media_image,media_video,media_other}/templates/*.json`.
-   Achar a base de qualquer nó: `grep -rl "<NodeType>" …/comfyui_workflow_templates*/templates/`.
+   **Procure primeiro nos templates oficiais JÁ INSTALADOS** (não precisa baixar nada). Desde o pacote 0.11.x todos
+   os `.json` ficam em `…/site-packages/comfyui_workflow_templates_json/templates/` (os `_media_*` só têm imagens).
+   Achar a base de qualquer nó: `grep -rl "<NodeType>" …/comfyui_workflow_templates*/templates/` (cobre os dois layouts).
    Só se não houver, baixe de fora (ex.: `kijai/ComfyUI-WanVideoWrapper/example_workflows/…` via `gh api` → `base64 -d`).
    Para bundles com **N blocos repetidos**, gere o JSON por **script Python** (builder de nós/links/grupos) em vez de
    editar à mão — mas a **ordem dos `widgets_values` tem que ser copiada de um template oficial**: o frontend intercala
    `control_after_generate` **logo depois do `seed`**, fora da ordem declarada no `/object_info`, e errar isso embaralha
    os widgets **em silêncio**. Valide com `python3 -c "import json;json.load(...)"`.
+   **Padrão recomendado quando o bundle também roda por script:** um **builder único** (`scripts/graph_spec.py`) que
+   gera o `.json` da UI **e** o grafo API (`{id: {class_type, inputs}}`, campos dinâmicos achatados com ponto:
+   `"model.resolution"`) a partir da mesma definição; as notas `MarkdownNote` vêm de `scripts/notes/*.md`. Confira
+   com `--check` (tipos/`python_module`/contagem de widgets no `/object_info`) **e** com uma conversão UI→API pelas
+   regras do frontend (ordem do `input_order`, `control_after_generate` após o `seed`, expansão do DYNAMICCOMBO,
+   `upload` do `LoadImage`) comparada ao grafo que o servidor aceitou — 0 diferenças = ordem de widgets certa sem abrir
+   browser. Exemplo: `workflows-api/image-edit-area-multiref/`.
 3. **Escreva o `setup.sh`** como fork focado de
    `task-launch-runpod-pod/scripts/provisioning.sh` (antes em `knowledge-runpod-provisioning`): só os custom nodes e modelos
    QUE ESTE workflow usa; garanta pré-condições (ex.: ComfyUI nightly p/ SCAIL-2); baixe o próprio `.json`
@@ -59,7 +66,11 @@ workflows-{cloud,api}/<nome-do-projeto>/   # kebab-case; o nome descreve a taref
    CoALA; não duplique o conteúdo deles.
 5. **Registre no catálogo**: adicione o projeto à lista certa (`workflows-cloud/` ou `workflows-api/`) no `README.md` raiz (e, se virar
    um tipo recorrente, uma cadeia no `catalog.md`).
-6. **Valide** (estrutural agora; funcional no pod/primeiro load). Checagem barata que pega quase tudo:
+6. **Valide** (estrutural agora; funcional no pod/primeiro load). **Teste sem gastar crédito** antes de qualquer
+   chamada paga: troque o nó pago por um passthrough local (modo `--simular` do cliente) e rode ponta a ponta; rode o
+   caminho pago **sem chave** — o nó partner para em 401 e nada é cobrado, mas o servidor já validou o grafo. Para
+   bundle com código (cliente, builder), peça uma **revisão independente** (subagente que só reporta, com reprodução);
+   ela achou defeitos reais que os testes próprios não pegaram. Checagem barata que pega quase tudo:
    JSON parseia · todo `link` aponta para nós existentes · todo `input.link` existe no array `links` ·
    todo `type` existe no `/object_info` (exceto `MarkdownNote`, frontend-only, que **não** aparece lá) ·
    `len(widgets_values)` bate com o do mesmo tipo nos templates oficiais · `bash -n setup.sh` · sem segredos no `.sh`.
@@ -78,6 +89,16 @@ workflows-{cloud,api}/<nome-do-projeto>/   # kebab-case; o nome descreve a taref
   Use **`find -L`** e, no fallback, **crie o symlink** em vez de copiar (cópia solta dessincroniza em silêncio).
 - **Status honesto no Card:** 🟡 = "grafo validado estruturalmente, **não executado**". Rodar um bundle-API gasta crédito
   de verdade — não prometa 🟢 antes de o usuário rodar.
+- **Bundle-API com custom node SEM IA** (ex.: Inpaint Crop & Stitch): o `setup.sh` clona um **commit fixado**, confere o
+  `HEAD` nas próximas execuções (aviso se divergir), apaga o clone se o `checkout` falhar e pede restart do servidor
+  (**Ctrl+C no terminal do `comfyui` e `comfyui` de novo** — não há systemd). Checagem de nós por `python3` no JSON do
+  `/object_info` (o `grep` sem `jq` dá falso positivo). Dicas de instalação com **`uv pip install --python .venv/bin/python`**
+  (o venv do uv não tem pip).
+- **Partner por script:** a chave da plataforma vai em `extra_data.api_key_comfy_org` do `POST /prompt` (lida pelo
+  cliente de `COMFY_ORG_API_KEY` em `~/ComfyUI/secrets.env`). Na UI basta o login. O cliente deve respeitar
+  `COMFY_HOST`/`COMFY_PORT` (as mesmas do comando `comfyui`) e `COMFY_ROOT`.
+- **Sem `__pycache__` no bundle** (o repo não tem `.gitignore`): `sys.dont_write_bytecode = True` no cliente e `python -B`
+  nos testes. **Saídas de teste fora do repo** (padrão do cliente: `~/ComfyUI/output/...`).
 - **Reuso:** modelos/paths vêm de CoALA `knowledge-runpod-provisioning`; não recopie manifestos divergentes.
 - O `setup.sh` roda como **root** no pod (instala apt/git, baixa modelos) — isso é esperado e seguro no pod descartável.
 
@@ -86,7 +107,8 @@ workflows-{cloud,api}/<nome-do-projeto>/   # kebab-case; o nome descreve a taref
   CoALA `knowledge-comfyui-workflows` (grafo/JSON),
   `task-build-workflow` (montar o grafo), `task-launch-runpod-pod` (subir o pod).
 - Exemplo de referência **atual** (bundle-API partner, com `API_REFERENCE_*.md`): `workflows-api/image-edit-nano-banana-2/`
-  e `workflows-api/video-person-swap-seedance-2/`. Exemplos antigos (fal, e self-hosted `workflows-cloud/person-swap-scail2/`)
+  e `workflows-api/video-person-swap-seedance-2/`. Com **builder + cliente headless + custom node sem IA + instalador do
+  ComfyUI local**: `workflows-api/image-edit-area-multiref/`. Exemplos antigos (fal, e self-hosted `workflows-cloud/person-swap-scail2/`)
   foram removidos em 2026-08-03 — recuperáveis no git (commit `e1dd237` e anterior).
 
 ## registo de aprendizado (memória CoALA local) (ao concluir)

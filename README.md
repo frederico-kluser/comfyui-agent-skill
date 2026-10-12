@@ -43,7 +43,8 @@ docs/                     # relatórios de pesquisa (a fonte: SCAIL-2, workflows
                           #   (chaves knowledge/*: scail2, comfyui-workflows, runpod-infra/-provisioning,
                           #    image-editing, image-masking, comfyui-api, image-enhance, comfyui-api-nodes)
 workflows-api/            # bundles que rodam por API online, sem GPU — todos em créditos comfy.org
-                          #   (image-edit-nano-banana-2, image-edit-seedream, video-person-swap-seedance-2)
+                          #   (image-edit-nano-banana-2, image-edit-seedream, image-edit-area-multiref,
+                          #    video-person-swap-seedance-2)
 AGENTS.md  ·  CLAUDE.md   # always-on (symlink)
 ```
 
@@ -61,9 +62,10 @@ e segue a mesma ordem de seções.
 2. No pod, rode o `setup.sh` do projeto como root (instala nodes + baixa modelos + o `.json`).
 3. Abra o ComfyUI (porta 8188), carregue o workflow e siga o README do projeto.
 
-**Rodar um bundle por API** (sem GPU): no ComfyUI local, rode o `setup.sh` do bundle (`workflows-api/<nome>/`).
-Os bundles atuais são **100% nós partner (core)** — o `setup.sh` não instala nada e não grava segredo: ele confere
-o servidor, verifica os nós no `/object_info` e deixa o `.json` no painel. A autenticação é o **login em
+**Rodar um bundle por API** (sem GPU alugada): abra o ComfyUI local com **`comfyui`** (primeiro plano, Ctrl+C encerra)
+e rode o `setup.sh` do bundle (`workflows-api/<nome>/`). Os bundles de geração são **nós partner (core)** — o `setup.sh`
+não grava segredo: confere o servidor, verifica os nós no `/object_info` e deixa o `.json` no painel. Só o
+`image-edit-area-multiref` instala algo: **um** custom node sem IA (Inpaint Crop & Stitch). A autenticação é o **login em
 `platform.comfy.org`**; a cobrança é em **créditos comfy.org**. Conhecimento: registo CoALA `knowledge-comfyui-api-nodes`.
 
 ## Projetos de workflow
@@ -76,9 +78,12 @@ o servidor, verifica os nós no `/object_info` e deixa o `.json` no painel. A au
 |---|---|---|---|---|
 | [`image-edit-nano-banana-2`](workflows-api/image-edit-nano-banana-2/) | **6 edições de foto** num arquivo: roupa · objeto em cena · trocar a pessoa · **me pôr na foto (roupa/pose da cena)** · **me pôr na foto (minha roupa/pose)** · trocar o local + match de luz | `GeminiNanoBanana2` (partner) | comfy.org | 🟡 |
 | [`image-edit-seedream`](workflows-api/image-edit-seedream/) | **As mesmas 6 edições**, no outro melhor editor — rode os dois e compare | `ByteDanceSeedreamNode` (partner, 5.0 lite / 4.5) | comfy.org | 🟡 |
+| [`image-edit-area-multiref`](workflows-api/image-edit-area-multiref/) | **Editar SÓ a área pintada** (máscara) com **até 10 referências**; o resto da foto não muda (recorte → IA → recolagem + trava de pixels). Inclui **cliente headless REST + WebSocket** | `GeminiNanoBanana2V2` (partner) + Inpaint Crop/Stitch (custom, sem IA) | comfy.org | 🟡 |
 | [`video-person-swap-seedance-2`](workflows-api/video-person-swap-seedance-2/) | **Me colocar num vídeo** no lugar de uma pessoa, mantendo pose, roupa, câmera e iluminação. Inclui o fluxo obrigatório de **asset verificado de humano real** | `ByteDance2ReferenceNode` + `ByteDanceCreate{Image,Video}Asset` + `GeminiNode` (partner) | comfy.org | 🟡 |
 
-Os três são **core do ComfyUI**: zero custom node, zero chave de API — só o login em `platform.comfy.org`.
+`image-edit-nano-banana-2`, `image-edit-seedream` e `video-person-swap-seedance-2` são **core do ComfyUI**: zero custom
+node, zero chave de API — só o login em `platform.comfy.org`. O `image-edit-area-multiref` usa **um** custom node sem IA (Inpaint Crop & Stitch, o `setup.sh`
+instala) e, **só para uso por script**, a chave `COMFY_ORG_API_KEY`.
 
 > **Histórico:** os bundles anteriores (fal/`*_fal`, SCAIL-2 self-hosted em `workflows-cloud/`,
 > comercial, música, image/video-to-video) foram removidos em 2026-08-03 para consolidar tudo em
@@ -92,7 +97,7 @@ LLM é rascunho até a curadoria. Só se persiste aprendizado de tarefa que pass
 
 ## Convenções e segurança
 - **API online vs self-hosted:** `workflows-api/` (modelo roda no provedor) · `workflows-cloud/` (você roda em GPU RunPod; sem bundle versionado hoje). Ver registo CoALA `knowledge-comfyui-api-nodes`.
-- **Credencial por rota:** nós **partner** (os três bundles atuais) = **login** em `platform.comfy.org`, **sem chave**. Nós `*_fal`/Replicate = chave em `~/ComfyUI/secrets.env` (`chmod 600`), **nunca** `~/.secrets`.
+- **Credencial por rota:** nós **partner** = **login** em `platform.comfy.org` na interface, **sem chave**; por script (headless), a chave `COMFY_ORG_API_KEY` vai em `extra_data.api_key_comfy_org` (cliente do `image-edit-area-multiref`). Nós `*_fal`/Replicate = chave em `~/ComfyUI/secrets.env` (`chmod 600`), **nunca** `~/.secrets`.
 - Modelos vão em `ComfyUI/models/<subpasta>` no Network Volume (`/workspace`). ComfyUI na porta 8188.
 - SCAIL-2/Wan destilado (LightX2V): **cfg=1**, 6–8 steps, shift 1; dims **÷32** (SCAIL-2). Itere em 480p, finalize em 720p.
 - **Nunca** commitar tokens (`HF_TOKEN`, `CIVITAI_TOKEN`, `.env`). `setup.sh` lê tokens do ambiente, nunca embute.

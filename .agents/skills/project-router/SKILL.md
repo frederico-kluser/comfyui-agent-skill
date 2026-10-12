@@ -41,6 +41,11 @@ Notação: `task-*` = skill viva; `CoALA knowledge-*` = registo na memória CoAL
 - Subir pod / baixar modelos → `task-launch-runpod-pod` + CoALA `knowledge-runpod-provisioning` + `knowledge-runpod-infra`.
 - Montar/adaptar workflow → `task-build-workflow` + CoALA `knowledge-comfyui-workflows` (+ `knowledge-scail2`).
 - Debug de geração → `task-debug-generation` + CoALA `knowledge-comfyui-workflows`.
+- **ComfyUI local** (abrir/encerrar/instalar nesta máquina) → comando global **`comfyui`** (primeiro plano, Ctrl+C encerra;
+  GPU sim, IA só por API, sem systemd) · instalação: `workflows-api/image-edit-area-multiref/scripts/install_comfyui_local.sh`
+  · fatos: CoALA `event/comfyui-local-install-2026-10`.
+- **Editar só uma área por API, com até 10 referências** (inclusive por script/headless) → `task-edit-image` + CoALA
+  `knowledge-comfyui-api-nodes` + `knowledge-image-editing` (+ `knowledge-comfyui-api`) · bundle `workflows-api/image-edit-area-multiref/`.
 - Criar/empacotar um projeto de workflow → `task-package-workflow-project` (adapta exemplo + gera setup.sh) + o registo CoALA da técnica.
 - Editar imagem (inpaint/instrução/trocar objeto/fundo) → `task-edit-image` + CoALA `knowledge-image-editing` + `knowledge-image-masking` (+ `knowledge-comfyui-api` p/ código/API, `knowledge-image-enhance` p/ upscale/relight/fundo).
 - Rodar/montar workflow **por API online** (Veo/Kling/Nano Banana/fal), escolher provedor, custo em créditos, nó fal travado → CoALA `knowledge-comfyui-api-nodes`.

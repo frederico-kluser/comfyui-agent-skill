@@ -1,0 +1,22 @@
+{
+  "coala_manifest": 1,
+  "project": "comfyui-agent-skill",
+  "skill": "comfyui-coala-agent-skill",
+  "db": "memory/coala.sqlite",
+  "engine": {
+    "file": "scripts/coala.py",
+    "version": "3.0.0",
+    "sha256": "41c550b6f0a462170fe4f37cc2b03094f2e06a967efac049f805f3e705b7db53"
+  },
+  "schema_version": 4,
+  "git_policy": "ignore",
+  "installer": "coala-agent-skill/scripts/coala-install.py",
+  "installed_at": "2026-09-27T09:12:16+00:00",
+  "updated_at": "2026-10-12T19:48:17+00:00",
+  "managed": {
+    "SKILL.md": "cd1f8fe7065cd192490cfa49dfb39d57f1f22fd501f1faabd3709de63b0f6100",
+    "memory/.gitignore": "5941079484623004d0493eda784610b14f22d89d4a7473df50f514a8a3b044d4",
+    "references/schema.md": "350f2e0b075c382ecadb608819ad31ebd76cacef3ecaf95db3775b23c09699ea",
+    "scripts/coala.py": "41c550b6f0a462170fe4f37cc2b03094f2e06a967efac049f805f3e705b7db53"
+  }
+}
